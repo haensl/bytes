@@ -50,7 +50,7 @@ Use this option to specify the desired unit for the disk space output. Supported
 Include dot-files a.k.a. hidden files into the total.
 
 ##### `-n`<a name="noNewlineOption"></a>
-Omit the trailing newline character.
+Do not print the trailing newline character.
 
 ### [Release Notes](RELEASE_NOTES.md)
 
