@@ -1,0 +1,63 @@
+#!/bin/bash
+#Sum the number of bytes in a directory listing
+totalBytes=0
+unit=bytes
+directory=.
+lsOpts=l
+
+function printUsageAndExit {
+  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [directory]"
+  exit
+}
+
+function setUnit {
+  case "$1" in
+    b) unit=bytes;;
+    kb) unit=kbytes;;
+    mb) unit=mbytes;;
+    gb) unit=gbytes;;
+    tb) unit=tbytes;;
+    *) echo "Unknown unit: $1" >&2; printUsageAndExit;;
+  esac
+}
+
+function setDirectory {
+  dir=$1
+  if [[ "$dir" == */ ]]; then
+    dir=${dir%/}
+  fi
+  if [ -d "$dir" ]; then
+    directory=$dir
+  else
+    echo "Directory does not exist: $1"
+    printUsageAndExit
+  fi
+}
+
+function printDirSize {
+  output=$(echo -e "scale=3 \n$1/$2 \nquit" | bc)
+  echo -n "$output"
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -u|--unit) setUnit "$2"; shift 2;;
+    -a|--all) lsOpts+="a"; shift 1;;
+    -*) echo "Unknown option: $1" >&2; printUsageAndExit;;
+    *) setDirectory $1; shift 1;;
+  esac
+done
+
+for Bytes in $(ls -${lsOpts} ${directory} | grep "^-" | awk '{ print $5 }')
+do
+    let totalBytes=$totalBytes+$Bytes
+done
+
+factor=1
+case "$unit" in
+  kbytes) let factor=1024;;
+  mbytes) let factor=1024**2;;
+  gbytes) let factor=1024**3;;
+  tbytes) let factor=1024**4;;
+esac
+printDirSize $totalBytes $factor

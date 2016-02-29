@@ -1,0 +1,2 @@
+### 1.0.0
+* bytes initial release
