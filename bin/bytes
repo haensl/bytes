@@ -4,9 +4,10 @@ totalBytes=0
 unit=bytes
 directory=.
 lsOpts=l
+newline=true
 
 function printUsageAndExit {
-  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [directory]"
+  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n] [directory]"
   exit
 }
 
@@ -36,12 +37,17 @@ function setDirectory {
 
 function printDirSize {
   output=$(echo -e "scale=3 \n$1/$2 \nquit" | bc)
-  echo -n "$output"
+  if $newline ; then
+    echo "$output"
+  else
+    echo -n "$output"
+  fi
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     -u|--unit) setUnit "$2"; shift 2;;
+    -n) newline=false; shift 1;;
     -a|--all) lsOpts+="a"; shift 1;;
     -*) echo "Unknown option: $1" >&2; printUsageAndExit;;
     *) setDirectory $1; shift 1;;

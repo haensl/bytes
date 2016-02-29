@@ -49,6 +49,9 @@ Use this option to specify the desired unit for the disk space output. Supported
 ##### `-a | --all`<a name="optionAll"></a>
 Include dot-files a.k.a. hidden files into the total.
 
+##### `-n`<a name="noNewlineOption"></a>
+Do not print the trailing newline character.
+
 ### [Release Notes](RELEASE_NOTES.md)
 
 [License](LICENSE)
