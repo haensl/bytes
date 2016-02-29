@@ -3,7 +3,7 @@ bytes
 
 #### Retrieves the amount of disk space consumed by files within a directory listing
 
-**bytes** is a simple command line tool to retrieve the size total of files within a directory.
+**bytes** is a shell utility to retrieve the disk space consumed by files within a directory.
 
 ### Installation
 
@@ -17,7 +17,7 @@ in order to add the bytes command to your PATH. You may need to restart your Ter
 
 ### Usage
 
-To calculate the total number of **bytes** consumed by all *visible (i.e. non-dot-)* files within the current directory, simply enter
+To calculate the total number of **bytes** consumed by all *visible (i.e. non-dot-)* files within the current directory (non-recursive), simply enter
 
 ```bash
 bytes
@@ -25,7 +25,7 @@ bytes
 
 in your terminal.
 
-You can also specify a different directory to calculate the total byte-size for:
+You can also specify a different directory to calculate the file-size total for:
 
 ```bash
 bytes <pathToDirectory>
@@ -33,12 +33,12 @@ bytes <pathToDirectory>
 
 If you are interested in a different unit (e.g. kilobytes or megabytes), use the [-u](#optionUnit) option to specify the desired unit.
 
-If you want to include *hidden* files, i.e. dot-files, to the total, use the [-a](#optionAll) option.
+If you want to include *hidden* files, i.e. dot-files, in the total, use the [-a](#optionAll) option.
 
 #### Options
 
 ##### `-u | --unit <b | kb | mb | gb | tb>`<a name="optionUnit"></a>
-Use this option to specify the desired unit for the size output. Supported units are:
+Use this option to specify the desired unit for the disk space output. Supported units are:
 
 - `b` = bytes
 - `kb` = kilobytes (1024 bytes)
