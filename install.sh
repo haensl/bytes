@@ -9,8 +9,11 @@ function printAddedToPathAndExit {
   exit
 }
 
-bytesInstalled="$(cat ~/.bash_profile | grep "Setting PATH for bytes")"
-bashProfile=~/.bash_profile
+bashProfile=~/.bashrc
+if [ ! -e "$bashProfile" ]; then
+  bashProfile=~/bash_profile
+fi
+bytesInstalled="$(cat ${bashProfile} | grep "Setting PATH for bytes")"
 
 if [ ${#bytesInstalled} -gt 0 ]; then
   printAddedToPathAndExit
