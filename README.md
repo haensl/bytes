@@ -40,7 +40,7 @@ If you want to include *hidden* files, i.e. dot-files, in the total, use the [-a
 ##### `-u | --unit <b | kb | mb | gb | tb>`<a name="optionUnit"></a>
 Use this option to specify the desired unit for the disk space output. Supported units are:
 
-- `b` = bytes
+- `b` = bytes *(default)*
 - `kb` = kilobytes (1024 bytes)
 - `mb` = megabytes (1024 kilobytes)
 - `gb` = gigabytes (1024 megabytes)
@@ -51,6 +51,9 @@ Include dot-files a.k.a. hidden files into the total.
 
 ##### `-n`<a name="noNewlineOption"></a>
 Do not print the trailing newline character.
+
+#### `-p | --precision <precision>`<a name="optionPrecision"></a>
+Specify the desired floating point precision for the output *(default: 3)*.
 
 ### [Release Notes](RELEASE_NOTES.md)
 
