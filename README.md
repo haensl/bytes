@@ -54,7 +54,7 @@ Include dot-files a.k.a. hidden files into the total.
 ##### `-n`<a name="noNewlineOption"></a>
 Do not print the trailing newline character.
 
-#### `-p | --precision <precision>`<a name="optionPrecision"></a>
+##### `-p | --precision <precision>`<a name="optionPrecision"></a>
 Specify the desired floating point precision for the output *(default: 3)*.
 
 ### [Release Notes](RELEASE_NOTES.md)
