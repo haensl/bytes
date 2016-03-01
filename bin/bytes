@@ -5,9 +5,11 @@ unit=bytes
 directory=.
 lsOpts=l
 newline=true
+precision=3
+numberRegEx="^[0-9]+$"
 
 function printUsageAndExit {
-  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n] [directory]"
+  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n] [-p | --precision <precision>] [directory]"
   exit
 }
 
@@ -35,8 +37,16 @@ function setDirectory {
   fi
 }
 
+function setPrecision {
+  if ! [[ $1 =~ $numberRegEx ]] ; then
+    echo "Invalid precision: $1"
+    printUsageAndExit
+  fi
+  precision=$1
+}
+
 function printDirSize {
-  output=$(echo -e "scale=3 \n$1/$2 \nquit" | bc)
+  output=$(echo -e "scale=$precision \n$1/$2 \nquit" | bc)
   if $newline ; then
     echo "$output"
   else
@@ -49,6 +59,7 @@ while [ "$#" -gt 0 ]; do
     -u|--unit) setUnit "$2"; shift 2;;
     -n) newline=false; shift 1;;
     -a|--all) lsOpts+="a"; shift 1;;
+    -p|--precision) setPrecision "$2"; shift 2;;
     -*) echo "Unknown option: $1" >&2; printUsageAndExit;;
     *) setDirectory $1; shift 1;;
   esac

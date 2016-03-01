@@ -1,5 +1,8 @@
+### 1.2.0
+* Add -p option to specify floating point precision of output
+
 ### 1.1.1
-* Make install script work on both OSX and Linux
+* Distinguish between .bashrc (Linux) and .bash_profile (OS X) in installation script
 
 ### 1.1.0
 * Add -n option to omit output of trailing newline character
