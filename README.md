@@ -46,6 +46,8 @@ Use this option to specify the desired unit for the disk space output. Supported
 - `gb` = gigabytes (1024 megabytes)
 - `tb` = terabytes (1024 gigabytes)
 
+*[No IEC support because we <3 binary and 1+1 still equals 10]*
+
 ##### `-a | --all`<a name="optionAll"></a>
 Include dot-files a.k.a. hidden files into the total.
 
