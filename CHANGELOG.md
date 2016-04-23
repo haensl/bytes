@@ -1,3 +1,6 @@
+## 1.3.0
+* Add [-v | --version] option
+
 ## 1.2.1
 * Check for existence of `[bashrc | bash_profile].local` in install script
 

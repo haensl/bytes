@@ -6,25 +6,28 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd ${DIR} > /dev/null
 
 function printAddedToPathAndExit {
-  echo "bytes added to path."
-  echo "You may need to restart your Terminal for changes to become effective."
-  exit
+echo "bytes added to path."
+echo "You may need to restart your Terminal for changes to become effective."
+exit
 }
 
 if [ -n "$(uname -s | grep Linux)" ]; then
   BASH_PROFILE=~/.bashrc
 elif [ -n "$(uname -s | grep Darwin)" ]; then
-  BASH_PROFILE=~/bash_profile
-else 
+  BASH_PROFILE=~/.bash_profile
+else
   echo "Unknown platform.In order to install bytes add $DIR/bin to your path."
   exit 1
 fi
 
-if [ -e "$BASH_PROFILE.local"]; then
-  BASH_PROFILE=~/bashrc.local
+if [ -e "${BASH_PROFILE}.local" ]; then
+  echo "HERE"
+  BASH_PROFILE=$BASH_PROFILE.local
 fi
+echo "$BASH_PROFILE"
 
 if [ $(command -v bytes >/dev/null 2>&1) ]; then
+  echo "HERE"
   printAddedToPathAndExit
 else
   echo "" >> ${BASH_PROFILE}

@@ -38,6 +38,9 @@ If you want to include *hidden* files, i.e. dot-files, in the total, use the [-a
 
 #### Options
 
+##### `-v | --version`<a name="versionOption"></a>
+Shows version information.
+
 ##### `-u | --unit <b | kb | mb | gb | tb>`<a name="optionUnit"></a>
 Use this option to specify the desired unit for the disk space output. Supported units are:
 
