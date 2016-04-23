@@ -6,11 +6,12 @@ bytes
 **bytes** is a shell utility to retrieve the disk space consumed by files within a directory.
 
 ### Installation
+*The install script currently supports Linux as well as OSX. If you are on a different platform with access to `sh` or `bash`, simply add `bytes` to your path.*
 
 Simply execute the installation script via
 
 ```bash
-./install.sh
+./install
 ```
 
 in order to add the bytes command to your PATH. You may need to restart your Terminal for changes to become effective.
@@ -57,7 +58,7 @@ Do not print the trailing newline character.
 ##### `-p | --precision <precision>`<a name="optionPrecision"></a>
 Specify the desired floating point precision for the output *(default: 3)*.
 
-### [Release Notes](RELEASE_NOTES.md)
+### [CHANGELOG](CHANGELOG.md)
 
 [License](LICENSE)
 -------
