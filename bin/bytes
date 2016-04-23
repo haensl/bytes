@@ -1,53 +1,60 @@
 #!/bin/bash
 #Sum the number of bytes in a directory listing
-totalBytes=0
-unit=bytes
-directory=.
-lsOpts=l
-newline=true
-precision=3
-numberRegEx="^[0-9]+$"
+VERSION=1.3.0
+TOTAL_BYTES=0
+UNIT=bytes
+DIR=.
+LS_OPTS=l
+PRINT_NEWLINE=true
+PRECISION=3
+NUMBER_REGEX="^[0-9]+$"
+UNIT_FACTOR=1
 
 function printUsageAndExit {
-  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n] [-p | --precision <precision>] [directory]"
+  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n | --newline] [-p | --precision <precision>] [-v | --version] [directory]"
+  exit
+}
+
+function printVersionAndExit {
+  echo "bytes v$VERSION"
   exit
 }
 
 function setUnit {
   case "$1" in
-    b) unit=bytes;;
-    kb) unit=kbytes;;
-    mb) unit=mbytes;;
-    gb) unit=gbytes;;
-    tb) unit=tbytes;;
+    b) UNIT=bytes;;
+    kb) UNIT=kbytes;;
+    mb) UNIT=mbytes;;
+    gb) UNIT=gbytes;;
+    tb) UNIT=tbytes;;
     *) echo "Unknown unit: $1" >&2; printUsageAndExit;;
   esac
 }
 
-function setDirectory {
+function setDir {
   dir=$1
   if [[ "$dir" == */ ]]; then
     dir=${dir%/}
   fi
   if [ -d "$dir" ]; then
-    directory=$dir
+    DIR=$dir
   else
-    echo "Directory does not exist: $1"
+    echo "DIR does not exist: $1"
     printUsageAndExit
   fi
 }
 
 function setPrecision {
-  if ! [[ $1 =~ $numberRegEx ]] ; then
+  if ! [[ $1 =~ $NUMBER_REGEX ]] ; then
     echo "Invalid precision: $1"
     printUsageAndExit
   fi
-  precision=$1
+  PRECISION=$1
 }
 
 function printDirSize {
-  output=$(echo -e "scale=$precision \n$1/$2 \nquit" | bc)
-  if $newline ; then
+  output=$(echo -e "scale=$PRECISION \n$1/$2 \nquit" | bc)
+  if $PRINT_NEWLINE ; then
     echo "$output"
   else
     echo -n "$output"
@@ -57,24 +64,25 @@ function printDirSize {
 while [ "$#" -gt 0 ]; do
   case "$1" in
     -u|--unit) setUnit "$2"; shift 2;;
-    -n) newline=false; shift 1;;
-    -a|--all) lsOpts+="a"; shift 1;;
+    -n|--newline) PRINT_NEWLINE=false; shift 1;;
+    -a|--all) LS_OPTS+="a"; shift 1;;
     -p|--precision) setPrecision "$2"; shift 2;;
+    -v|--version) printVersionAndExit;;
     -*) echo "Unknown option: $1" >&2; printUsageAndExit;;
-    *) setDirectory $1; shift 1;;
+    *) setDir $1; shift 1;;
   esac
 done
 
-for Bytes in $(ls -${lsOpts} ${directory} | grep "^-" | awk '{ print $5 }')
+for Bytes in $(ls -${LS_OPTS} ${DIR} | grep "^-" | awk '{ print $5 }')
 do
-    let totalBytes=$totalBytes+$Bytes
+    let TOTAL_BYTES=$totalBytes+$Bytes
 done
 
-factor=1
-case "$unit" in
-  kbytes) let factor=1024;;
-  mbytes) let factor=1024**2;;
-  gbytes) let factor=1024**3;;
-  tbytes) let factor=1024**4;;
+case "$UNIT" in
+  kbytes) let UNIT_FACTOR=1024;;
+  mbytes) let UNIT_FACTOR=1024**2;;
+  gbytes) let UNIT_FACTOR=1024**3;;
+  tbytes) let UNIT_FACTOR=1024**4;;
 esac
-printDirSize $totalBytes $factor
+
+printDirSize $TOTAL_BYTES $UNIT_FACTOR
