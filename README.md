@@ -55,7 +55,7 @@ Use this option to specify the desired unit for the disk space output. Supported
 ##### `-a | --all`<a name="optionAll"></a>
 Include dot-files a.k.a. hidden files into the total.
 
-##### `-n`<a name="noNewlineOption"></a>
+##### `-n | --newline`<a name="noNewlineOption"></a>
 Do not print the trailing newline character.
 
 ##### `-p | --precision <precision>`<a name="optionPrecision"></a>
