@@ -21,9 +21,8 @@ usage() {
   echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n | --newline] [-p | --precision <precision>] [-v | --version] [directory]" >&2
 }
 
-printVersionAndExit() {
-  echo "bytes v$VERSION"
-  exit
+version() {
+  echo "bytes v$VERSION" >&2
 }
 
 function setUnit {
@@ -148,7 +147,7 @@ parseArgs() {
         getUnitFactor "$OPTARG" unitFactor
         ;;
       v)
-        printVersion
+        version
         exit 0
         ;;
       *)
