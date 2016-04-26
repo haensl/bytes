@@ -1,21 +1,14 @@
 #!/usr/bin/env bash
 
-#
+
 # bytes
 # Sum the number of bytes in a directory listing
 # Written by HP Dietz | h.p.dietz@gmail.com
-#
+
 
 readonly VERSION=1.4.0
 readonly NUMBER_REGEX="^[0-9]+$"
 readonly ARGS="$@"
-#TOTAL_BYTES=0
-#UNIT=bytes
-#DIR=.
-#LS_OPTS=l
-#PRINT_NEWLINE=true
-#PRECISION=3
-#UNIT_FACTOR=1
 
 usage() {
   echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n | --newline] [-p | --precision <precision>] [-v | --version] [directory]" >&2
@@ -25,40 +18,10 @@ version() {
   echo "bytes v$VERSION" >&2
 }
 
-function setUnit {
-  case "$1" in
-    b) UNIT=bytes;;
-    kb) UNIT=kbytes;;
-    mb) UNIT=mbytes;;
-    gb) UNIT=gbytes;;
-    tb) UNIT=tbytes;;
-    *) echo "Unknown unit: $1" >&2; printUsageAndExit;;
-  esac
-}
 
-function setDir {
-  dir=$1
-  if [[ "$dir" == */ ]]; then
-    dir=${dir%/}
-  fi
-  if [ -d "$dir" ]; then
-    DIR=$dir
-  else
-    echo "DIR does not exist: $1"
-    printUsageAndExit
-  fi
-}
-
-function setPrecision {
-  if ! [[ $1 =~ $NUMBER_REGEX ]] ; then
-    echo "Invalid precision: $1"
-    printUsageAndExit
-  fi
-  PRECISION=$1
-}
-
-function printDirSize {
-  output=$(echo -e "scale=$PRECISION \n$1/$2 \nquit" | bc)
+printDirSize() {
+  local bytes=$1
+  output=$(echo -e "scale=$PRECISION \n$bytes/$UNIT_FACTOR \nquit" | bc)
   if $PRINT_NEWLINE ; then
     echo "$output"
   else
@@ -117,6 +80,7 @@ parseArgs() {
       --all)        args="${args}-a " ;;
       --newline)    args="${args}-n " ;;
       --precision)  args="${args}-p " ;;
+      --recursive)  args="${args}-r " ;;
       --unit)       args="${args}-u " ;;
       --version)    args="${args}-v " ;;
       # pass through anything else
@@ -129,12 +93,13 @@ parseArgs() {
   local lsOpts=l
   local newline=true
   local precision=3
+  local recursive=false
   local unitFactor=1
 
-  while getopts "anp:u:v" OPTION;
+  while getopts "anp:ru:v" OPTION;
   do
     case $OPTION in
-      a) 
+      a)
         lsOpts=${lsOpts}a
         ;;
       n)
@@ -142,6 +107,9 @@ parseArgs() {
         ;;
       p)
         getPrecision "$OPTARG" precision
+        ;;
+      r)
+        recursive=true
         ;;
       u)
         getUnitFactor "$OPTARG" unitFactor
@@ -151,51 +119,62 @@ parseArgs() {
         exit 0
         ;;
       *)
-        echo "Invalid option: -$OPTION" >&2
         usage
         exit 1
         ;;
     esac
   done
+  shift $((OPTIND-1))
+
+  local dir=.
+  if [ -n "$1" ]; then 
+    dir=$1
+    if [ ! -d "$dir" ];
+    then
+      echo "No such directory: $dir"
+      usage
+      exit 1
+    fi
+  fi
 
   readonly LS_OPTS=$lsOpts
   readonly NEWLINE=$newline
   readonly PRECISION=$precision
   readonly UNIT_FACTOR=$unitFactor
+  readonly RECURSIVE=$recursive
+  readonly DIR=$dir
+}
+
+getBytesInDir() {
+  local dir=$1
+  local recursive=$2
+  local outVar=$3
+  local total=0
+
+  for bytes in $(ls -$LS_OPTS $dir | grep "^-" | awk '{ print $5 }')
+  do
+    let total=$total+$bytes
+  done
+  let $outVar=$outVar+$total
+
+  if $recursive ; then
+    local t=0
+    for subDir in $(ls -$LS_OPTS $dir | grep "^d" | awk '{ print $9 }')
+    do
+      if [ "$subDir" != "." ] && [ "$subDir" != ".." ]; then
+        let total=$total+"$(getBytesInDir $dir/$subDir $recursive)"
+      fi
+    done
+  fi
+
+  echo $total
 }
 
 main() {
   parseArgs $ARGS
-  echo "LS_OPTS: ${LS_OPTS}"
-  echo "NEWLINE: ${NEWLINE}"
-  echo "PRECISTION: ${PRECISION}"
-  echo "UNIT_FACTOR: ${UNIT_FACTOR}"
+  local bytes=$(getBytesInDir $DIR $RECURSIVE)
+  printDirSize $bytes
 }
 
 main
 
-#while [ "$#" -gt 0 ]; do
-#  case "$1" in
-#    -u|--unit) setUnit "$2"; shift 2;;
-#    -n|--newline) PRINT_NEWLINE=false; shift 1;;
-#    -a|--all) LS_OPTS+="a"; shift 1;;
-#    -p|--precision) setPrecision "$2"; shift 2;;
-#    -v|--version) printVersionAndExit;;
-#    -*) echo "Unknown option: $1" >&2; printUsageAndExit;;
-#    *) setDir $1; shift 1;;
-#  esac
-#done
-#
-#for Bytes in $(ls -${LS_OPTS} ${DIR} | grep "^-" | awk '{ print $5 }')
-#do
-#    let TOTAL_BYTES=$totalBytes+$Bytes
-#done
-#
-#case "$UNIT" in
-#  kbytes) let UNIT_FACTOR=1024;;
-#  mbytes) let UNIT_FACTOR=1024**2;;
-#  gbytes) let UNIT_FACTOR=1024**3;;
-#  tbytes) let UNIT_FACTOR=1024**4;;
-#esac
-#
-#printDirSize $TOTAL_BYTES $UNIT_FACTOR

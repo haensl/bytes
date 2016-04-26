@@ -3,12 +3,12 @@ bytes
 
 #### Retrieves the amount of disk space consumed by files within a directory listing
 
-**bytes** is a shell utility to retrieve the disk space consumed by files within a directory.
+**bytes** is a shell utility to calculate the disk space consumed by files within a directory.
 
 ### Installation
 *The install script currently supports Linux as well as OSX. If you are on a different platform with access to `sh` or `bash`, simply add `bytes` to your path.*
 
-Simply execute the installation script via
+Execute the installation script via
 
 ```bash
 ./install
@@ -36,10 +36,21 @@ If you are interested in a different unit (e.g. kilobytes or megabytes), use the
 
 If you want to include *hidden* files, i.e. dot-files, in the total, use the [-a](#optionAll) option.
 
+If you want to include subdirectories into the calculation, use the [-r](#optionRecursive) option.
+
 #### Options
 
-##### `-v | --version`<a name="versionOption"></a>
-Shows version information.
+##### `-a | --all`<a name="optionAll"></a>
+Include dot-files a.k.a. hidden files into the total.
+
+##### `-n | --newline`<a name="noNewlineOption"></a>
+Do not print the trailing newline character.
+
+##### `-p | --precision <precision>`<a name="optionPrecision"></a>
+Specify the desired floating point precision for the output *(default: 3)*.
+
+##### `-r | --recursive`<a name="optionRecursive"></a>
+If set, `bytes` recursively traverses subdirectories. *(default: false)*
 
 ##### `-u | --unit <b | kb | mb | gb | tb>`<a name="optionUnit"></a>
 Use this option to specify the desired unit for the disk space output. Supported units are:
@@ -50,16 +61,10 @@ Use this option to specify the desired unit for the disk space output. Supported
 - `gb` = gigabytes (1024 megabytes)
 - `tb` = terabytes (1024 gigabytes)
 
+##### `-v | --version`<a name="versionOption"></a>
+Shows version information.
+
 *[No IEC support because we <3 binary and 1+1 still equals 10]*
-
-##### `-a | --all`<a name="optionAll"></a>
-Include dot-files a.k.a. hidden files into the total.
-
-##### `-n | --newline`<a name="noNewlineOption"></a>
-Do not print the trailing newline character.
-
-##### `-p | --precision <precision>`<a name="optionPrecision"></a>
-Specify the desired floating point precision for the output *(default: 3)*.
 
 ### [CHANGELOG](CHANGELOG.md)
 
