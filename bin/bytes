@@ -148,14 +148,12 @@ parseArgs() {
 getBytesInDir() {
   local dir=$1
   local recursive=$2
-  local outVar=$3
   local total=0
 
   for bytes in $(ls -$LS_OPTS $dir | grep "^-" | awk '{ print $5 }')
   do
     let total=$total+$bytes
   done
-  let $outVar=$outVar+$total
 
   if $recursive ; then
     local t=0
