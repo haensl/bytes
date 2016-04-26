@@ -170,8 +170,7 @@ getBytesInDir() {
 
 main() {
   parseArgs $ARGS
-  local bytes=$(getBytesInDir $DIR $RECURSIVE)
-  printDirSize $bytes
+  printDirSize $(getBytesInDir $DIR $RECURSIVE)
 }
 
 main
