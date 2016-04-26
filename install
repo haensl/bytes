@@ -6,7 +6,7 @@ readonly DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd ${DIR} > /dev/null
 
 printAddedToPathAndExit() {
-  echo "bytes added to path."
+  echo "bytes added to PATH."
   echo "You may need to restart your Terminal for changes to become effective."
   exit 0
 }
@@ -18,7 +18,7 @@ install() {
   elif [ -n "$(uname -s | grep Darwin)" ]; then
     bashProfile=~/.bash_profile
   else
-    echo "Unknown platform. In order to install bytes add $DIR/bin to your path."
+    echo "Unknown platform. In order to install bytes add $DIR/bin to your PATH."
     exit 1
   fi
 
