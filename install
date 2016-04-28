@@ -2,39 +2,41 @@
 
 set -e
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+readonly DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd ${DIR} > /dev/null
 
-function printAddedToPathAndExit {
-echo "bytes added to path."
-echo "You may need to restart your Terminal for changes to become effective."
-exit
+printAddedToPathAndExit() {
+  echo "bytes added to PATH."
+  echo "You may need to restart your Terminal for changes to become effective."
+  exit 0
 }
 
-if [ -n "$(uname -s | grep Linux)" ]; then
-  BASH_PROFILE=~/.bashrc
-elif [ -n "$(uname -s | grep Darwin)" ]; then
-  BASH_PROFILE=~/.bash_profile
-else
-  echo "Unknown platform.In order to install bytes add $DIR/bin to your path."
-  exit 1
-fi
+install() {
+  local bashProfile
+  if [ -n "$(uname -s | grep Linux)" ]; then
+    bashProfile=~/.bashrc
+  elif [ -n "$(uname -s | grep Darwin)" ]; then
+    bashProfile=~/.bash_profile
+  else
+    echo "Unknown platform. In order to install bytes add $DIR/bin to your PATH."
+    exit 1
+  fi
 
-if [ -e "${BASH_PROFILE}.local" ]; then
-  echo "HERE"
-  BASH_PROFILE=$BASH_PROFILE.local
-fi
-echo "$BASH_PROFILE"
+  if [ -e "${bashProfile}.local" ]; then
+    bashProfile=$bashProfile.local
+  fi
 
-if [ $(command -v bytes >/dev/null 2>&1) ]; then
-  echo "HERE"
-  printAddedToPathAndExit
-else
-  echo "" >> ${BASH_PROFILE}
-  echo "# Setting PATH for bytes" >> ${BASH_PROFILE}
-  echo "PATH=\"${DIR}/bin:\${PATH}\"" >> ${BASH_PROFILE}
-  echo "export PATH" >> ${BASH_PROFILE}
-  printAddedToPathAndExit
-fi
+  if [ $(command -v bytes >/dev/null 2>&1) ]; then
+    printAddedToPathAndExit
+  else
+    echo "" >> ${bashProfile}
+    echo "# Setting PATH for bytes" >> ${bashProfile}
+    echo "PATH=\"${DIR}/bin:\${PATH}\"" >> ${bashProfile}
+    echo "export PATH" >> ${bashProfile}
+    printAddedToPathAndExit
+  fi
+}
+
+install
 
 popd > /dev/null

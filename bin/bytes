@@ -1,59 +1,27 @@
-#!/bin/bash
-#Sum the number of bytes in a directory listing
-VERSION=1.3.0
-TOTAL_BYTES=0
-UNIT=bytes
-DIR=.
-LS_OPTS=l
-PRINT_NEWLINE=true
-PRECISION=3
-NUMBER_REGEX="^[0-9]+$"
-UNIT_FACTOR=1
+#!/usr/bin/env bash
 
-function printUsageAndExit {
-  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n | --newline] [-p | --precision <precision>] [-v | --version] [directory]"
-  exit
+
+# bytes
+# Sum the number of bytes in a directory listing
+# Written by HP Dietz | h.p.dietz@gmail.com
+
+
+readonly VERSION=1.4.0
+readonly NUMBER_REGEX="^[0-9]+$"
+readonly ARGS="$@"
+
+usage() {
+  echo "Usage: bytes [-u | --unit <b | kb | mb | gb | tb>] [-a | --all] [-n | --newline] [-p | --precision <precision>] [-v | --version] [directory]" >&2
 }
 
-function printVersionAndExit {
-  echo "bytes v$VERSION"
-  exit
+version() {
+  echo "bytes v$VERSION" >&2
 }
 
-function setUnit {
-  case "$1" in
-    b) UNIT=bytes;;
-    kb) UNIT=kbytes;;
-    mb) UNIT=mbytes;;
-    gb) UNIT=gbytes;;
-    tb) UNIT=tbytes;;
-    *) echo "Unknown unit: $1" >&2; printUsageAndExit;;
-  esac
-}
 
-function setDir {
-  dir=$1
-  if [[ "$dir" == */ ]]; then
-    dir=${dir%/}
-  fi
-  if [ -d "$dir" ]; then
-    DIR=$dir
-  else
-    echo "DIR does not exist: $1"
-    printUsageAndExit
-  fi
-}
-
-function setPrecision {
-  if ! [[ $1 =~ $NUMBER_REGEX ]] ; then
-    echo "Invalid precision: $1"
-    printUsageAndExit
-  fi
-  PRECISION=$1
-}
-
-function printDirSize {
-  output=$(echo -e "scale=$PRECISION \n$1/$2 \nquit" | bc)
+printDirSize() {
+  local bytes=$1
+  output=$(echo -e "scale=$PRECISION \n$bytes/$UNIT_FACTOR \nquit" | bc)
   if $PRINT_NEWLINE ; then
     echo "$output"
   else
@@ -61,28 +29,149 @@ function printDirSize {
   fi
 }
 
-while [ "$#" -gt 0 ]; do
-  case "$1" in
-    -u|--unit) setUnit "$2"; shift 2;;
-    -n|--newline) PRINT_NEWLINE=false; shift 1;;
-    -a|--all) LS_OPTS+="a"; shift 1;;
-    -p|--precision) setPrecision "$2"; shift 2;;
-    -v|--version) printVersionAndExit;;
-    -*) echo "Unknown option: $1" >&2; printUsageAndExit;;
-    *) setDir $1; shift 1;;
+getUnitFactor() {
+  local unit=$1
+  local outVar=$2
+  case "$unit" in
+    b)
+      eval $outVar=1
+      ;;
+    kb)
+      eval $outVar=1024
+      ;;
+    mb)
+      let f=1024**2
+      eval $outVar=$f
+      ;;
+    gb)
+      let f=1024**3
+      eval $outVar=$f
+      ;;
+    tb)
+      let f=1024**4
+      eval $outVar=$f
+      ;;
+    *)
+      echo "Invalid unit: $unit" >&2;
+      usage
+      exit 1
+      ;;
   esac
-done
+}
 
-for Bytes in $(ls -${LS_OPTS} ${DIR} | grep "^-" | awk '{ print $5 }')
-do
-    let TOTAL_BYTES=$totalBytes+$Bytes
-done
+getPrecision() {
+  local precision=$1
+  local outVar=$2
 
-case "$UNIT" in
-  kbytes) let UNIT_FACTOR=1024;;
-  mbytes) let UNIT_FACTOR=1024**2;;
-  gbytes) let UNIT_FACTOR=1024**3;;
-  tbytes) let UNIT_FACTOR=1024**4;;
-esac
+  if ! [[ $precision =~ "$NUMBER_REGEX" ]]; then
+    echo "Invalid precision: $precision" >&2
+    usage
+    exit 1
+  fi
+  eval $outVar=$precision
+}
 
-printDirSize $TOTAL_BYTES $UNIT_FACTOR
+parseArgs() {
+  local arg
+  for arg 
+  do
+    case "$arg" in
+      # translate --long-options into short options
+      --all)        args="${args}-a " ;;
+      --newline)    args="${args}-n " ;;
+      --precision)  args="${args}-p " ;;
+      --recursive)  args="${args}-r " ;;
+      --unit)       args="${args}-u " ;;
+      --version)    args="${args}-v " ;;
+      # pass through anything else
+      *)            args="${args} ${arg} " ;;
+    esac
+  done
+
+  eval set -- $args
+
+  local lsOpts=l
+  local newline=true
+  local precision=3
+  local recursive=false
+  local unitFactor=1
+
+  while getopts "anp:ru:v" OPTION;
+  do
+    case $OPTION in
+      a)
+        lsOpts=${lsOpts}a
+        ;;
+      n)
+        printNewline=false
+        ;;
+      p)
+        getPrecision "$OPTARG" precision
+        ;;
+      r)
+        recursive=true
+        ;;
+      u)
+        getUnitFactor "$OPTARG" unitFactor
+        ;;
+      v)
+        version
+        exit 0
+        ;;
+      *)
+        usage
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  local dir=.
+  if [ -n "$1" ]; then 
+    dir=$1
+    if [ ! -d "$dir" ];
+    then
+      echo "No such directory: $dir"
+      usage
+      exit 1
+    fi
+  fi
+
+  readonly LS_OPTS=$lsOpts
+  readonly NEWLINE=$newline
+  readonly PRECISION=$precision
+  readonly UNIT_FACTOR=$unitFactor
+  readonly RECURSIVE=$recursive
+  readonly DIR=$dir
+}
+
+getBytesInDir() {
+  local dir=$1
+  local recursive=$2
+  local total=0
+
+  for bytes in $(ls -$LS_OPTS $dir | grep "^-" | awk '{ print $5 }')
+  do
+    let total=$total+$bytes
+  done
+
+  if $recursive ; then
+    local t=0
+    for subDir in $(ls -$LS_OPTS $dir | grep "^d" | awk '{ print $9 }')
+    do
+      if [ "$subDir" != "." ] && [ "$subDir" != ".." ]; then
+        let total=$total+"$(getBytesInDir $dir/$subDir $recursive)"
+      fi
+    done
+  fi
+
+  echo $total
+}
+
+main() {
+  parseArgs $ARGS
+  printDirSize $(getBytesInDir $DIR $RECURSIVE)
+}
+
+main
+
