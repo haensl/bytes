@@ -1,0 +1,7 @@
+stages:
+  - test
+
+jobs:
+  include:
+    - stage: test
+      script: ./test/test.sh

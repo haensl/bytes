@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-
 # bytes
 # Sum the number of bytes in a directory listing
 # Written by HP Dietz | h.p.dietz@gmail.com
 
 
-readonly VERSION=1.4.0
-readonly NUMBER_REGEX="^[0-9]+$"
+set -e
+readonly VERSION=1.5.0
 readonly ARGS="$@"
 
 usage() {
@@ -21,7 +20,7 @@ version() {
 
 printDirSize() {
   local bytes=$1
-  output=$(echo -e "scale=$PRECISION \n$bytes/$UNIT_FACTOR \nquit" | bc)
+  output=$(printf "%.${PRECISION}f" $(echo -e "scale=$PRECISION \n$bytes/$UNIT_FACTOR \nquit" | bc))
   if $PRINT_NEWLINE ; then
     echo "$output"
   else
@@ -60,15 +59,15 @@ getUnitFactor() {
 }
 
 getPrecision() {
-  local precision=$1
+  local p=$1
   local outVar=$2
 
-  if ! [[ $precision =~ "$NUMBER_REGEX" ]]; then
-    echo "Invalid precision: $precision" >&2
+  if ! [[ "$p" =~ ^[0-9]+$ ]]; then
+    echo "Invalid precision: $p" >&2
     usage
     exit 1
   fi
-  eval $outVar=$precision
+  eval $outVar=$p
 }
 
 parseArgs() {
@@ -78,6 +77,7 @@ parseArgs() {
     case "$arg" in
       # translate --long-options into short options
       --all)        args="${args}-a " ;;
+      --help)       args="${args}-h " ;;
       --newline)    args="${args}-n " ;;
       --precision)  args="${args}-p " ;;
       --recursive)  args="${args}-r " ;;
@@ -96,7 +96,7 @@ parseArgs() {
   local recursive=false
   local unitFactor=1
 
-  while getopts "anp:ru:v" OPTION;
+  while getopts "ahnp:ru:v" OPTION;
   do
     case $OPTION in
       a)
@@ -116,6 +116,10 @@ parseArgs() {
         ;;
       v)
         version
+        exit 0
+        ;;
+      h)
+        usage
         exit 0
         ;;
       *)

@@ -1,20 +1,20 @@
 bytes
 =====================
 
-#### Retrieves the amount of disk space consumed by files within a directory listing
+[![Build Status](https://travis-ci.org/haensl/bytes.svg?branch=master)](https://travis-ci.org/haensl/bytes)
 
-**bytes** is a shell utility to calculate the disk space consumed by files within a directory.
+**bytes** is a bash utility to calculate the disk space consumed by files within a directory.
 
 ### Installation
-*The install script currently supports Linux as well as OSX. If you are on a different platform with access to `sh` or `bash`, simply add `bytes` to your path.*
 
-Execute the installation script via
+#### Linux/OSX from source
+1. Clone this repository
+2. `cd` into the repository
+3. `make install`
 
-```bash
-./install
-```
-
-in order to add the bytes command to your PATH. You may need to restart your Terminal for changes to become effective.
+#### OSX via [Homebrew](https://brew.sh/)
+1. `brew tap haensl/haensl`
+2. `brew install bytes`
 
 ### Usage
 
@@ -29,25 +29,30 @@ in your terminal.
 You can also specify a different directory to calculate the file-size total for:
 
 ```bash
-bytes <pathToDirectory>
+bytes ~/some/dir
 ```
 
-If you are interested in a different unit (e.g. kilobytes or megabytes), use the [-u](#optionUnit) option to specify the desired unit.
+If you want to display the result in a different unit (e.g. kilobytes or megabytes), use the [-u](#optionUnit) option to specify the desired unit.
 
 If you want to include *hidden* files, i.e. dot-files, in the total, use the [-a](#optionAll) option.
 
 If you want to include subdirectories into the calculation, use the [-r](#optionRecursive) option.
 
-#### Options
+See the [Options](#options) section for a full list of available options.
+
+#### Options<a name="options"></a>
 
 ##### `-a | --all`<a name="optionAll"></a>
 Include dot-files a.k.a. hidden files into the total.
 
+##### `-h | --help`<a name="optionHelp"></a>
+Display usage information.
+
 ##### `-n | --newline`<a name="noNewlineOption"></a>
-Do not print the trailing newline character.
+Do not print a trailing newline character.
 
 ##### `-p | --precision <precision>`<a name="optionPrecision"></a>
-Specify the desired floating point precision for the output *(default: 3)*.
+Specify the desired floating point precision *(default: 3)*.
 
 ##### `-r | --recursive`<a name="optionRecursive"></a>
 If set, `bytes` recursively traverses subdirectories. *(default: false)*
@@ -62,7 +67,7 @@ Use this option to specify the desired unit for the disk space output. Supported
 - `tb` = terabytes (1024 gigabytes)
 
 ##### `-v | --version`<a name="versionOption"></a>
-Shows version information.
+Display version information.
 
 *[No IEC support because we <3 binary and 1+1 still equals 10]*
 
