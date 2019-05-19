@@ -1,3 +1,11 @@
+## 1.5.0
+* [#10: Add Makefile to install.](https://github.com/haensl/bytes/issues)
+* Add `[-h | --help]` option.
+* Add manpage.
+* Fix precision option.
+* Add tests.
+* Add CI.
+
 ## 1.4.0
 * Add `[-r | --recursive]` option
 

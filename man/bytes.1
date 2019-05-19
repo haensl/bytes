@@ -1,0 +1,95 @@
+." vim: set syn=nroff
+.TH bytes 1 "May 2019" "bytes v1.5.0"
+
+.SH NAME
+bytes - calculate the disk space consumed by files within a directory.
+
+.SH SYNOPSIS
+bytes [-ahnrv]
+      [-p \fI\,precision\fR]
+      [-u \fI\,unit\fR]
+      [\fI\,directory\fR]
+
+.SH DESCRIPTION
+\fI\,bytes\fR calculates the disk space consumed by files with a directory. \fI\,bytes\fR does not support IEC.
+
+To calculate the total number of bytes consumed by all visible (i.e. non-dot) files within the current directory excluding subdirectories, simply enter
+
+.RS
+bytes
+.RE
+
+into your terminal.
+You can also specify a different directory to calculate the file-size total for:
+
+.RS
+bytes \fI\,path/to/directory\fR
+.RE
+
+If you want to display the result in a different unit, e.g. kilobytes or megabytes, use the \fI\,-u\fR option to specify the desired unit.
+
+If you want to include hidden files, i.e. dot-files, use the \fI\,-a\fR option.
+
+If you want to include subdirectories, use the \fI\,-r\fR option.
+
+See the \fI\,OPTIONS\fR section for a full list of available options.
+
+.SH OPTIONS
+-a, --all
+.RS
+include dot-files a.k.a. hidden files.
+.RE
+
+-h, --help
+.RS
+display usage information.
+.RE
+
+-n, --newline
+.RS
+do not print a trailing newline character.
+.RE
+
+-p \fI\,precision\fR, --precision \fI\,precision\fR
+.RS
+specify the desired floating point precision. Default: 3.
+.RE
+
+-r, --recursive
+.RS
+if set, \fI\,bytes\fR recursively traverses subdirectories.
+.RE
+
+-u \fI\,unit\fR, --unit \fI\,unit\fR
+.RS
+specify the unit in which to display disk space consumption. Supported units are:
+.RS
+.IP \fI\,b\fR .2i
+bytes (default)
+.IP \fI\,kb\fR
+kilobytes (1024 bytes)
+.IP \fI\,mb\fR
+megabytes (1014 kilobytes)
+.IP \fI\,gb\fR
+gigabytes (1024 megabytes)
+.IP \fI\,tb\fR
+terabytes (1024 gigabytes)
+.RE
+.RE
+
+-v, --version
+.RS
+display version information.
+.RE
+
+.SH ARGUMENTS
+\fI\,directory\fR
+.RS
+specify the directory for which to calculate the consumed disk space. Defaults to the current directory.
+
+.SH BUGS
+Report bugs to <https://gihub.com/haensl/bytes/issues>
+
+.SH AUTHOR
+Written by Hans-Peter Dietz <h.p.dietz@gmail.com>
+
