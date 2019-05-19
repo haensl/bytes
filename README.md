@@ -1,6 +1,8 @@
 bytes
 =====================
 
+[![Build Status](https://travis-ci.org/haensl/bytes.svg?branch=master)](https://travis-ci.org/haensl/bytes)
+
 **bytes** is a bash utility to calculate the disk space consumed by files within a directory.
 
 ### Installation
