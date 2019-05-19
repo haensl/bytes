@@ -1,3 +1,6 @@
+## 1.5.1
+* Remove obsolete file.
+
 ## 1.5.0
 * [#10: Add Makefile to install.](https://github.com/haensl/bytes/issues)
 * Add `[-h | --help]` option.

@@ -6,7 +6,7 @@
 
 
 set -e
-readonly VERSION=1.5.0
+readonly VERSION=1.5.1
 readonly ARGS="$@"
 
 usage() {
